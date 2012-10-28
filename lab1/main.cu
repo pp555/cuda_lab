@@ -74,8 +74,7 @@ int main(int argc, char** argv)
 
 	gpu_end_time = TIME_CHECK;
 
-
-sleep(1);
+cout << "[1]" << hArray[1] << endl;
 
 //cpu
 	cpu_start_time = TIME_CHECK;
