@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 	timestamp gpu_post_prologue_time = 0;
 	timestamp gpu_post_computing_time = 0;
 	timestamp gpu_end_time = 0;
+	timestamp cpu_init_time = 0;
 	timestamp cpu_start_time = 0;
 	timestamp cpu_end_time = 0;
 
@@ -83,9 +84,12 @@ int main(int argc, char** argv)
 	gpu_end_time = TIME_CHECK;
 
 
-sleep(1);
-
 //cpu
+	cpu_init_time = TIME_CHECK;
+        for(int i = 0; i < N; i++) {
+                hArray[i] =  i + 1;
+        }
+
 	cpu_start_time = TIME_CHECK;
 	for(long long i=0;i<N;i++)
 		hArray[i] = hArray[i] * hArray[i] * hArray[i];
@@ -104,7 +108,10 @@ sleep(1);
 	cout << "counting\t" <<  gpu_post_computing_time - gpu_post_prologue_time << endl;
 	cout << "epilogue\t" <<  gpu_end_time - gpu_post_computing_time << endl;
 
-	cout << "cpu\t" <<  cpu_end_time - cpu_start_time << endl;
+	cout << "cpu init\t" <<  cpu_start_time - cpu_init_time << endl;
+        cout << "cpu\t" <<  cpu_end_time - cpu_start_time << endl;
+
     
     return 0;
 }
+
