@@ -3,10 +3,23 @@
 #include <ctime>
 #include <unistd.h>
 #include <cmath>
+#include <sys/time.h>
 
 #define  N		1000000
 #define  BLOCK_SIZE	64
-#define TIME_CHECK clock()/float(CLOCKS_PER_SEC)
+
+//#define TIME_CHECK clock()/float(CLOCKS_PER_SEC)
+
+typedef unsigned long long timestamp;
+
+//get time in microseconds
+timestamp get_timestamp()
+{
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	return now.tv_usec + now.tv_sec*1000000;
+}
+#define TIME_CHECK get_timestamp()
 
 using namespace std;
 
@@ -38,12 +51,12 @@ __global__ void pi(float *arr) {
 
 int main(int argc, char** argv)
 {
-	float gpu_start_time = 0;
-	float gpu_post_prologue_time = 0;
-	float gpu_post_computing_time = 0;
-	float gpu_end_time = 0;
-	float cpu_start_time = 0;
-	float cpu_end_time = 0;
+	timestamp gpu_start_time = 0;
+	timestamp gpu_post_prologue_time = 0;
+	timestamp gpu_post_computing_time = 0;
+	timestamp gpu_end_time = 0;
+	timestamp cpu_start_time = 0;
+	timestamp cpu_end_time = 0;
 
 
 	if(argc != 2)
