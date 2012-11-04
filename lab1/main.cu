@@ -2,12 +2,25 @@
 #include <iostream>
 #include <ctime>
 #include <unistd.h>
+#include <sys/time.h>
 
 using namespace std;
 
 #define  N   		1000000
 #define  BLOCK_SIZE	16
-#define TIME_CHECK clock()/float(CLOCKS_PER_SEC)
+//#define TIME_CHECK clock()/float(CLOCKS_PER_SEC)
+
+typedef unsigned long long timestamp;
+
+
+timestamp get_timestamp()
+{
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	return now.tv_usec + now.tv_sec*1000000;
+}
+#define TIME_CHECK get_timestamp()
+
 
 float 	   hArray[N];
 float     *dArray;
@@ -49,12 +62,12 @@ int main(int argc, char** argv)
 
 
 
-	float gpu_start_time = 0;
-	float gpu_post_prologue_time = 0;
-	float gpu_post_computing_time = 0;
-	float gpu_end_time = 0;
-	float cpu_start_time = 0;
-	float cpu_end_time = 0;
+	timestamp gpu_start_time = 0;
+	timestamp gpu_post_prologue_time = 0;
+	timestamp gpu_post_computing_time = 0;
+	timestamp gpu_end_time = 0;
+	timestamp cpu_start_time = 0;
+	timestamp cpu_end_time = 0;
 
 	gpu_start_time = TIME_CHECK;
 
@@ -74,7 +87,8 @@ int main(int argc, char** argv)
 
 	gpu_end_time = TIME_CHECK;
 
-cout << "[1]" << hArray[1] << endl;
+
+sleep(1);
 
 //cpu
 	cpu_start_time = TIME_CHECK;
