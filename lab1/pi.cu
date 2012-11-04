@@ -50,19 +50,21 @@ int main(int argc, char** argv)
 		return -1;
     double eps = atof(argv[1]);
 	double x0=1, x1=10000;
+	double x2 = 1;
 	cout << eps << endl;
 
 //cpu
 	cpu_start_time = TIME_CHECK;
 	int i = 1;
 	int mianownik = 1;
-	while(abs(x0 - x1) > eps)
+	while(abs(x2 - x1) > eps)
 	{
-		x1 = x0;
+		x1 = x2;
 		int licznik = (i%2)?-1:1;
 		i++;
 		mianownik += 2;
-		x0 += (float)licznik/(float)mianownik;
+		x2 = (float)licznik/(float)mianownik;
+		x0 += x2;
 	}
 	x0 = 4 * x0;
 	cpu_end_time = TIME_CHECK;
