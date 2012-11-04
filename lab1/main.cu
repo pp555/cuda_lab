@@ -12,7 +12,7 @@ using namespace std;
 
 typedef unsigned long long timestamp;
 
-
+//get time in microseconds
 timestamp get_timestamp()
 {
 	struct timeval now;
@@ -21,11 +21,9 @@ timestamp get_timestamp()
 }
 #define TIME_CHECK get_timestamp()
 
-
 float 	   hArray[N];
 float     *dArray;
 int 	   blocks;
-
 
 void prologue(void) {
 	memset(hArray, 0, sizeof(hArray));
@@ -40,7 +38,6 @@ void epilogue(void) {
 	cudaMemcpy(hArray, dArray, sizeof(hArray), cudaMemcpyDeviceToHost);
 	cudaFree(dArray);
 }
-
 
 // Kernel
 __global__ void pow3(float *A) {
@@ -59,8 +56,6 @@ int main(int argc, char** argv)
 		perror("No CUDA devices available -- exiting.");
 		return 1;
     }
-
-
 
 	timestamp gpu_start_time = 0;
 	timestamp gpu_post_prologue_time = 0;
@@ -97,21 +92,19 @@ sleep(1);
 	cpu_end_time = TIME_CHECK;
 
 
-	cout << gpu_start_time << endl;
-	cout << gpu_post_prologue_time << endl;
-	cout << gpu_post_computing_time << endl;
-	cout << gpu_end_time << endl;
-
-	cout << cpu_start_time << endl;
-	cout << cpu_end_time << endl;
+//	cout << gpu_start_time << endl;
+//	cout << gpu_post_prologue_time << endl;
+//	cout << gpu_post_computing_time << endl;
+//	cout << gpu_end_time << endl;
+//
+//	cout << cpu_start_time << endl;
+//	cout << cpu_end_time << endl;
 
 	cout << "prologue\t" <<  gpu_post_prologue_time - gpu_start_time << endl;
 	cout << "counting\t" <<  gpu_post_computing_time - gpu_post_prologue_time << endl;
 	cout << "epilogue\t" <<  gpu_end_time - gpu_post_computing_time << endl;
 
-
 	cout << "cpu\t" <<  cpu_end_time - cpu_start_time << endl;
     
-
     return 0;
 }
