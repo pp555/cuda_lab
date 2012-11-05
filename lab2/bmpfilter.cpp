@@ -54,7 +54,7 @@ int main()
         
     bmpFile.seekg(header.offset, ios_base::beg);
     
-//    Pixel pixel;
+    Pixel pixel;
     
     Pixel **image = new Pixel*[dib.height];
     
@@ -67,19 +67,46 @@ int main()
 //            bmpFile.read((char*)&pixel, sizeof(pixel));
             bmpFile.read((char*)&(image[y][x]), sizeof(Pixel));
 //            cout << (int)image[y][x].r << '\t' << (int)image[y][x].g << '\t' << (int)image[y][x].b << '\t' << endl;
+//            cout << (int)pixel.r << '\t' << (int)pixel.g << '\t' << (int)pixel.b << '\t' << endl;
         }
         bmpFile.seekg(dib.width, ios_base::cur);
+    }
+    
+    
+
+    for(int y = dib.height - 1; y >= 0 ; y--)
+    {
+        for(int x = 0; x < dib.width; x++)
+        {
+            cout << (int)image[y][x].r << '\t' << (int)image[y][x].g << '\t' << (int)image[y][x].b << '\t' << endl;
+        }
     }
     
     
     
     
     
+    ofstream bmpResult("./result.bmp", ios::out | ios::binary);
+    char *buf = new char[header.offset -1];
+    char *zerosBuf = new char[dib.width];
+    for(int i=0;i<dib.width;i++)
+        zerosBuf[i] = 0;
+    bmpFile.seekg(0, ios_base::beg);
+    bmpFile.read(buf, header.offset -1);
+    bmpResult.write(buf, header.offset -1);
     
+    for(int y = dib.height - 1; y >= 0 ; y--)
+    {
+        image[y] = new Pixel[dib.width];
+        for(int x = 0; x < dib.width; x++)
+        {
+            cout << image[y][x].r << endl;
+            bmpResult.write((char*)&(image[y][x]), sizeof(Pixel));
+        }
+//        bmpResult.write(zerosBuf, dib.width);
+    }
     
-    
-    
-    
+    bmpResult.close();
     
     
     
