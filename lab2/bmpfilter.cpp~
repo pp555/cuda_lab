@@ -88,13 +88,13 @@ cout << 'x' << '\t' << 'y' << '\t' << 'r' << '\t' << 'g' << '\t' << 'b' << '\t' 
     
     
     ofstream bmpResult("./result.bmp", ios::out | ios::binary);
-    char *buf = new char[header.offset];
+    char *buf = new char[header.offset -1];
     char *zerosBuf = new char[dib.width];
     for(int i=0;i<dib.width;i++)
         zerosBuf[i] = 0;
     bmpFile.seekg(0, ios_base::beg);
-    bmpFile.read(buf, header.offset);
-    bmpResult.write(buf, header.offset);
+    bmpFile.read(buf, header.offset -1);
+    bmpResult.write(buf, header.offset -1);
     
     for(int y = dib.height - 1; y >= 0 ; y--)
     {
@@ -103,7 +103,7 @@ cout << 'x' << '\t' << 'y' << '\t' << 'r' << '\t' << 'g' << '\t' << 'b' << '\t' 
             cout << image[y][x].r << endl;
             bmpResult.write((char*)&(image[y][x]), sizeof(Pixel));
         }
-        bmpResult.write(zerosBuf, dib.width);
+        bmpResult.write(zerosBuf, dib.width-1);
     }
     
     bmpResult.close();
