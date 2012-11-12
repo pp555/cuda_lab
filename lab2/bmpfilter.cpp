@@ -83,10 +83,34 @@ cout << 'x' << '\t' << 'y' << '\t' << 'r' << '\t' << 'g' << '\t' << 'b' << '\t' 
         }
     }
     
+
+
+
+//    for(int y = 0; y < dib.height ; y++)
+//    {
+//        for(int x = 0; x < dib.width; x++)
+//        {
+//            cout << x << '\t' << y << '\t' << (int)image[y][x].r << '\t' << (int)image[y][x].g << '\t' << (int)image[y][x].b << '\t' << endl;
+//        }
+//    }
+	
+
+
+    //gray-scale
+    for(int y = 0; y < dib.height ; y++)
+    {
+        for(int x = 0; x < dib.width; x++)
+        {
+            char color = (image[y][x].r + image[y][x].g + image[y][x].b) / 3;
+            image[y][x].r = image[y][x].g = image[y][x].b = color;
+        }
+    }
+
+
     
     
     
-    
+    //saving bmp
     ofstream bmpResult("./result.bmp", ios::out | ios::binary);
     char *buf = new char[header.offset];
     char *zerosBuf = new char[dib.width];
@@ -100,23 +124,14 @@ cout << 'x' << '\t' << 'y' << '\t' << 'r' << '\t' << 'g' << '\t' << 'b' << '\t' 
     {
         for(int x = 0; x < dib.width; x++)
         {
-            cout << image[y][x].r << endl;
             bmpResult.write((char*)&(image[y][x]), sizeof(Pixel));
         }
         bmpResult.write(zerosBuf, dib.width);
     }
     
     bmpResult.close();
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     bmpFile.close();
     
     cout << endl;
