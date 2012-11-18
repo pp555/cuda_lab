@@ -74,10 +74,10 @@ void medianFilterGpu(Pixel *input, Pixel *output, int width, int height)
 	Pixel *outData;
 	//zamiana pixeli na liniowa tablice float
 	PixelToFloatArray(input, width, height, textureData);
-	//format kanalow rgba (32 bity na kanal)
+	//format kanalow rgba (32 bity na skaldowa)
 	const cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindFloat);
 	displayLastError("channel format creation");
-	//alokacja cudaArray na urzadzeniu (width x height x ilosc kanalow w formacie(4)
+	//alokacja cudaArray na urzadzeniu (width x height x ilosc skladowych w formacie(4)
 	cudaMallocArray(&inArr, &channelDesc, width, height, cudaArraySurfaceLoadStore);
 	displayLastError("array alloc");
 	//alokacja pamieci na pixele - wyjscie z urzadzenia
@@ -164,7 +164,7 @@ __global__ void medianFilterCudaTexture(cudaArray *input, Pixel *output, int wid
 	//	-2, 0, 2,
 	//	-1, 0, 1
 	//};
-	//for(int i = 0; i<=9; i++)
+	//for(int i = 0; i<9; i++)
 	//	{
 	//		float4 a = tex2D(tex, u+pixelKernel[i*2], v+pixelKernel[i*2+1]);
 	//		sum.x += a.x * okno[i];
@@ -176,14 +176,7 @@ __global__ void medianFilterCudaTexture(cudaArray *input, Pixel *output, int wid
 	//sum.y /= 9.0f;
 	//sum.z /= 9.0f;
 	//sum.w /= 9.0f;
-	
-	//for(int i = 0; i<9; i++)
-	//{
-	//	float4 a = tex2D(tex, u+pixelKernel[i*2], v+pixelKernel[i*2+1]);
-	//	windowR[i] = (int)255*a.x;
-	//	windowG[i] = (int)255*a.y;
-	//	windowB[i] = (int)255*a.z;
-	//}
+
 	//output[col * width + row].r = sum.x;
 	//output[col * width + row].g = sum.y;
 	//output[col * width + row].b = sum.z;
