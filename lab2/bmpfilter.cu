@@ -1,4 +1,3 @@
-
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -7,6 +6,11 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
+
+#include <ctime>
+#include <unistd.h>
+#include <sys/time.h>
+
 
 #define INPUT_BMP_FILE "lenabig.bmp"
 #define OUTPUT_BMP_FILE_CPU "result-cpu.bmp"
