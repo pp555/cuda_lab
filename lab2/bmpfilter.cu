@@ -30,21 +30,21 @@ struct FileHeader
     int sth;
     unsigned int offset;
 
-}; __attribute__ ((packed));
+} __attribute__ ((packed));
 
 struct DibHeader
 {
     unsigned int dib_size;
     unsigned int width;
     unsigned int height;
-}; __attribute__ ((packed));
+} __attribute__ ((packed));
 
 struct Pixel
 {
     unsigned char b;
     unsigned char g;
     unsigned char r;
-}; __attribute__ ((packed));
+} __attribute__ ((packed));
 //#pragma pack(pop)
 
 struct Times // execution times [ms]
