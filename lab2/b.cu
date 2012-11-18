@@ -23,8 +23,8 @@ void displayLastError(const string &msg)
 }
 
 
-#pragma pack(push)
-#pragma pack(1)
+//#pragma pack(push)
+//#pragma pack(1)
 struct FileHeader
 {
     char id[2];
@@ -32,20 +32,26 @@ struct FileHeader
     int sth;
     unsigned int offset;
 
-};// __attribute__ ((packed));
+} __attribute__ ((packed));
 struct DibHeader
 {
     unsigned int dib_size;
     unsigned int width;
     unsigned int height;
-};// __attribute__ ((packed));
+} __attribute__ ((packed));
 struct Pixel
 {
     unsigned char b;
     unsigned char g;
     unsigned char r;
-};// __attribute__ ((packed));
-#pragma pack(pop)
+} __attribute__ ((packed));
+struct Times // execution times [ms]
+{
+	float cuda;
+	float cudaOnlyComputation;
+	double cpu;
+} executionTimes;
+//#pragma pack(pop)
 void PixelToFloatArray(Pixel *pixel, int w, int h, float *&texArr)
 {
 	texArr = new float[w*h*4];
@@ -63,6 +69,13 @@ size_t pitch;
 texture<float4 , 2, cudaReadModeElementType> tex;
 void medianFilterGpu(Pixel *input, Pixel *output, int width, int height)
 {
+	cudaEvent_t start, stop, startComp, stopComp;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventCreate(&startComp);
+	cudaEventCreate(&stopComp);
+	cudaEventRecord(start, 0);
+	
 	float4 a;
 	float *textureData;
 	float *pitchPtr;
@@ -100,7 +113,10 @@ void medianFilterGpu(Pixel *input, Pixel *output, int width, int height)
 	displayLastError("texture bind");
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 	dim3 dimGrid(height/BLOCK_SIZE, height/BLOCK_SIZE);
+	cudaEventRecord(startComp, 0);
 	medianFilterCudaTexture<<<dimGrid, dimBlock>>>(inArr, outData, width, height, 1.0f/width);
+	cudaEventRecord(stopComp, 0);
+	cudaEventSynchronize(stopComp);
 	displayLastError("kernel");
 	cudaMemcpy(output, outData, size*sizeof(Pixel), cudaMemcpyDeviceToHost);
 	displayLastError("copy out");
@@ -108,6 +124,15 @@ void medianFilterGpu(Pixel *input, Pixel *output, int width, int height)
 	displayLastError("free array");
 	cudaFree(outData);
 	displayLastError("free output");
+	
+	cudaEventRecord(stop, 0);
+	cudaEventSynchronize(stop);
+	
+	cudaEventElapsedTime(&executionTimes.cuda, start, stop);
+	cudaEventElapsedTime(&executionTimes.cudaOnlyComputation, startComp, stopComp);
+
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 }
 __device__ unsigned char selectionCuda(unsigned char window[FILTER_WINDOW_SIZE])
 {
@@ -255,6 +280,9 @@ int main(int argc, char *argv[])
 		 output[i].b = 255;
 	}
     medianFilterGpu(image, output, dib.width, dib.height);
+	cout << "times:\n";
+	cout << "GPU:\t\t" << executionTimes.cuda << endl;
+	cout << "GPU (computation):\t\t" << executionTimes.cudaOnlyComputation << endl;
 
     //saving result bmp
     ofstream bmpResult(OUTPUT_BMP_FILE, ios::out | ios::binary);
