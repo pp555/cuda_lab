@@ -121,13 +121,24 @@ int main(int argc, char *argv[])
     Pixel *outputCpu = new Pixel[dib.width*dib.height];
     Pixel *outputGpu = new Pixel[dib.width*dib.height];
 
+int num = 100;
+Times avgTimes = {0.0, 0.0, 0.0};
+for(int i=0;i<num;i++)
+{
+
     medianFilterGpu(image, outputGpu, dib.width, dib.height);
     medianFilterCpu(image, outputCpu, dib.width, dib.height);
 
+    avgTimes.cpu += executionTimes.cpu/(float)num;
+    avgTimes.cuda += executionTimes.cuda/(float)num;
+    avgTimes.cudaOnlyComputation += executionTimes.cudaOnlyComputation/(float)num;
+
+
+}
 	cout << "times:\n";
-	cout << "CPU:\t\t" << executionTimes.cpu << endl;
-	cout << "GPU:\t\t" << executionTimes.cuda << endl;
-	cout << "GPU (computation):\t\t" << executionTimes.cudaOnlyComputation << endl;
+	cout << "CPU:\t\t" << avgTimes.cpu << endl;
+	cout << "GPU:\t\t" << avgTimes.cuda << endl;
+	cout << "GPU (computation):\t\t" << avgTimes.cudaOnlyComputation << endl;
 
 
 
@@ -372,5 +383,5 @@ __device__ unsigned char selectionCuda(unsigned char window[FILTER_WINDOW_SIZE])
 
 void displayLastError(const string &msg)
 {
-	cout << "Last Error (" << msg << "):\t" << cudaGetErrorString(cudaGetLastError()) << endl;
+//	cout << "Last Error (" << msg << "):\t" << cudaGetErrorString(cudaGetLastError()) << endl;
 }

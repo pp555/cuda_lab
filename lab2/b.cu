@@ -10,7 +10,7 @@
 #include <string>
 #include <cuda_texture_types.h>
 #define INPUT_BMP_FILE "lenabig.bmp"
-#define OUTPUT_BMP_FILE "result.bmp"
+#define OUTPUT_BMP_FILE "result-cuda2.bmp"
 #define FILTER_WINDOW_SIZE 9
 typedef float real;
 #define BLOCK_SIZE 16
@@ -279,10 +279,17 @@ int main(int argc, char *argv[])
 		 output[i].g = 0;
 		 output[i].b = 255;
 	}
+Times avgTimes = {0.0, 0.0, 0.0};
+int num = 100;
+for(int i=0;i<num;i++)
+{
     medianFilterGpu(image, output, dib.width, dib.height);
+avgTimes.cuda += executionTimes.cuda/(float)num;
+avgTimes.cudaOnlyComputation += executionTimes.cudaOnlyComputation/(float)num;
+}
 	cout << "times:\n";
-	cout << "GPU:\t\t" << executionTimes.cuda << endl;
-	cout << "GPU (computation):\t\t" << executionTimes.cudaOnlyComputation << endl;
+	cout << "GPU:\t\t" << avgTimes.cuda << endl;
+	cout << "GPU (computation):\t\t" << avgTimes.cudaOnlyComputation << endl;
 
     //saving result bmp
     ofstream bmpResult(OUTPUT_BMP_FILE, ios::out | ios::binary);
