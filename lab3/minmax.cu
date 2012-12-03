@@ -16,11 +16,27 @@ void displayLastError(const string &msg)
 	cout << "Last Error (" << msg << "):\t" << cudaGetErrorString(cudaGetLastError()) << endl;
 }
 
-__global__ void bSearchCuda(float *array, float search, int *index)
+__global__ void minMaxCuda(float *array)
 {
-	int x = blockDim.x * blockIdx.x + threadIdx.x;
-    if(array[x]==search)
-        *index = x;
+int nTotalThreads = blockDim.x;	// Total number of active threads
+	while(nTotalThreads > 1)
+	{
+		int halfPoint = (nTotalThreads >> 1);	// divide by two
+		// only the first half of the threads will be active.
+
+		if (threadIdx.x < halfPoint)
+		{
+			float temp = array[threadIdx.x + halfPoint];
+
+			if (temp < array[threadIdx.x]) array[threadIdx.x] = temp;
+
+			
+		}
+		__syncthreads();
+
+		nTotalThreads = (nTotalThreads >> 1);	// divide by two.
+
+	}
 }
 
 
@@ -29,42 +45,35 @@ int main(int argc, char *argv[])
 
     float *data = new float[N];
     for(int i=0;i<N;i++)
-        data[i] = (i<10)?1.0f:0.0f;
+        data[i] = i;
 
     float *deviceData;
-    int *deviceIndex;
+    float *deviceMax;
     size_t size = N*sizeof(float);
     cudaMalloc((void**)&deviceData, size);
 	displayLastError("memory allocation");
-    cudaMalloc((void**)&deviceIndex, sizeof(int));
+    cudaMalloc((void**)&deviceMax, sizeof(float));
 	displayLastError("memory allocation");
 
 	cudaMemcpy(deviceData, data, size, cudaMemcpyHostToDevice);
 	displayLastError("memory copying");
 
-    int index = -1;
-	cudaMemcpy(deviceIndex, &index, sizeof(int), cudaMemcpyHostToDevice);
-
-
-
-
     int blocks = N / BLOCK_SIZE;
     if(N % BLOCK_SIZE)
 		blocks++;
 
-    bSearchCuda<<<blocks, BLOCK_SIZE>>>(deviceData, 1.0f, deviceIndex);
+    minMaxCuda<<<blocks, BLOCK_SIZE>>>(deviceData);
 	displayLastError("kernel");
 
 
-	cudaMemcpy(&index, deviceIndex, sizeof(int), cudaMemcpyDeviceToHost);
+    float max;
+	cudaMemcpy(&max, deviceMax, sizeof(float), cudaMemcpyDeviceToHost);
 	displayLastError("memory copying");
-
-    cout << index << endl;
 
 
     cudaFree(deviceData);
 	displayLastError("free");
-    cudaFree(deviceIndex);
+    cudaFree(deviceMax);
 	displayLastError("free");
     delete [] data;
 

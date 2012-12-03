@@ -13,7 +13,7 @@
 #define OUTPUT_BMP_FILE "result-cuda2.bmp"
 #define FILTER_WINDOW_SIZE 9
 typedef float real;
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 64
 
 using namespace std;
 
@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
 		 output[i].b = 255;
 	}
 Times avgTimes = {0.0, 0.0, 0.0};
-int num = 100;
+int num = 1;
 for(int i=0;i<num;i++)
 {
     medianFilterGpu(image, output, dib.width, dib.height);

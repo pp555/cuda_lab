@@ -17,7 +17,7 @@
 #define OUTPUT_BMP_FILE_GPU "result-cuda.bmp"
 #define FILTER_WINDOW_SIZE 9
 
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 64
 
 using namespace std;
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     Pixel *outputCpu = new Pixel[dib.width*dib.height];
     Pixel *outputGpu = new Pixel[dib.width*dib.height];
 
-int num = 100;
+int num = 1;
 Times avgTimes = {0.0, 0.0, 0.0};
 for(int i=0;i<num;i++)
 {
