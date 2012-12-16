@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 
 #define BLOCK_SIZE 512
