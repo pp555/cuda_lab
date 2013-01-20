@@ -11,8 +11,10 @@ extern "C" __global__ void IncVect(float *Tin, float *Tout) {
 extern "C" __global__ void Polynomial(float *result, float *a, float x, int n)
 {
 	int i = blockDim.x * blockIdx.x + threadIdx.x;
+
 	if(i < n + 1)
 	{
 		result[i] = a[i] * pow(x, i);
 	}
+
 }
