@@ -19,16 +19,20 @@ void displayLastError(const string &msg)
 	cout << "Last Error (" << msg << "):\t" << cudaGetErrorString(cudaGetLastError()) << endl;
 }
 
-template<class numType>
-__global__ void kernel(numType *array)
+__global__ void kernel(NUMBER_TYPE *array)
 {
 	int x = blockDim.x * blockIdx.x + threadIdx.x;
     if(x < N)
     {
-        numType num = array[x];
+        NUMBER_TYPE num = array[x];
 #pragma unroll 1
+<<<<<<< HEAD
         for(long long int i = 1;i < LOOP;i*=2)
             array[x] = num*2+3*i/1000.0*i/1000.0;
+=======
+        for(long long int i = 1;i < LOOP;i+=2)
+            array[x] += num/100.0;
+>>>>>>> e4939db379c99f5bab0195d5cf51e393f5a989f9
     }
 }
 
@@ -39,8 +43,13 @@ __global__ void kernel_unroll(NUMBER_TYPE *array)
     {
         NUMBER_TYPE num = array[x];
 #pragma unroll 100
+<<<<<<< HEAD
         for(long long int i = 1;i < LOOP;i*=2)
             array[x] = num*2+3*i/1000.0*i/1000.0;
+=======
+        for(long long int i = 1;i < LOOP;i+=2)
+            array[x] += num/100.0;
+>>>>>>> e4939db379c99f5bab0195d5cf51e393f5a989f9
     }
 }
 
@@ -51,8 +60,13 @@ __global__ void kernel_unroll2(NUMBER_TYPE *array)
     {
         NUMBER_TYPE num = array[x];
 #pragma unroll 10
+<<<<<<< HEAD
         for(long long int i = 1;i < LOOP;i*=2)
             array[x] = num*2+3*i/1000.0*i/1000.0;
+=======
+        for(long long int i = 1;i < LOOP;i+=2)
+            array[x] += num/100.0;
+>>>>>>> e4939db379c99f5bab0195d5cf51e393f5a989f9
     }
 }
 
@@ -83,8 +97,13 @@ int main(int argc, char *argv[])
 
 	//bez unroll
 	cudaEventRecord(start, 0);
+<<<<<<< HEAD
     for(int t=0;t<100;t++)
         kernel<NUMBER_TYPE><<<blocks, BLOCK_SIZE>>>(deviceData);
+=======
+    for(int t=0;t<1000;t++)
+        kernel<<<blocks, BLOCK_SIZE>>>(deviceData);
+>>>>>>> e4939db379c99f5bab0195d5cf51e393f5a989f9
 	cudaThreadSynchronize();
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
